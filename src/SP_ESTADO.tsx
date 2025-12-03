@@ -58,25 +58,24 @@ export const SP_ESTADO: React.FC = () => {
 
             console.log("📄 TEXTO DA PÁGINA:", text);
 
-            // ✅ DATA PAGAMENTO
-            const dataPagamentoRegex = /Data Pagamento\s+(\d{2}\/\d{2}\/\d{4})/;
+            // ✅ REFERÊNCIA → 07/2015
+            const referenciaRegex =
+                /(FOLHA\s+(?:NORMAL|COMPLEMENTAR|SUPLEMENTAR)|13\.\s+SALARIO)\s*-\s*(\d{2}\/\d{4})/;
+            // ✅ TOTAL VENCIMENTOS → 905,96
+            const totalVencimentosRegex =
+                /Salário\s+Contribuição\s+RPPS\s*\/\s*RGPS[\s\S]*?(\d{1,3}(?:\.\d{3})*,\d{2})/;
 
-            // ✅ TOTAL VENCIMENTOS, DESCONTOS E LÍQUIDO
-            const totaisRegex =
-                /(\d{1,3}(?:\.\d{3})*,\d{2})\s+(\d{1,3}(?:\.\d{3})*,\d{2})\s+(\d{1,3}(?:\.\d{3})*,\d{2})\s*\*/;
-
-            const dataPagamentoMatch = text.match(dataPagamentoRegex);
-            const totaisMatch = text.match(totaisRegex);
+            const referenciaMatch = text.match(referenciaRegex);
+            const totalVencimentosMatch = text.match(totalVencimentosRegex);
 
             pageResults.push({
               fileName: file.name,
               pageNumber: i,
-              referencia: dataPagamentoMatch
-                  ? dataPagamentoMatch[1]
+              referencia: referenciaMatch
+                  ? referenciaMatch[1]
                   : "Não encontrado",
-
-              totalVencimentos: totaisMatch
-                  ? totaisMatch[1]
+              totalVencimentos: totalVencimentosMatch
+                  ? totalVencimentosMatch[1]
                   : "Não encontrado",
             });
           }
@@ -87,10 +86,13 @@ export const SP_ESTADO: React.FC = () => {
         }
       };
 
-      reader.onerror = (err) => reject(`Erro ao carregar o arquivo: ${err}`);
+      reader.onerror = (err) =>
+          reject(`Erro ao carregar o arquivo: ${err}`);
+
       reader.readAsArrayBuffer(file);
     });
   };
+
 
   const handleCopyToClipboard = () => {
     // Filtrar apenas os resultados com valores encontrados
