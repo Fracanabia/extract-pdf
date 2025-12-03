@@ -11,7 +11,7 @@ interface PDFResult {
   totalVencimentos: string;
 }
 
-export const SP: React.FC = () => {
+export const SP_ESTADO: React.FC = () => {
   const [results, setResults] = useState<PDFResult[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
