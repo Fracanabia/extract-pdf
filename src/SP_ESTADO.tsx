@@ -119,7 +119,10 @@ export const SP_ESTADO: React.FC = () => {
 
   return (
     <div>
-      <h2>Extrator de Campos de PDFs - Holerite SP/SP</h2>
+      <h2>Extrator de Campos de PDFs</h2>
+      <h3>GOVERNO DO ESTADO DE SÃO PAULO</h3>
+      <h3> Departamento de Despesa de Pessoal do Estado</h3>
+      <h3> Demonstrativo de Pagamento</h3>
       <input type="file" accept="application/pdf" multiple onChange={handlePDFUpload} />
       {loading && <p>Processando...</p>}
       <div style={{ marginTop: 16 }}>
