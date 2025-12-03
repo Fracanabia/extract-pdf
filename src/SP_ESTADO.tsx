@@ -42,6 +42,7 @@ export const SP_ESTADO: React.FC = () => {
         }
 
         const typedArray = new Uint8Array(e.target.result as ArrayBuffer);
+
         try {
           const pdf = await pdfjsLib.getDocument(typedArray).promise;
           const pageResults: PDFResult[] = [];
@@ -49,21 +50,34 @@ export const SP_ESTADO: React.FC = () => {
           for (let i = 1; i <= pdf.numPages; i++) {
             const page = await pdf.getPage(i);
             const content = await page.getTextContent();
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const text = content.items.map((item) => (item as any).str).join(" ");           
-            console.log("🚀 ~ reader.onload= ~ text:", text)
 
-            const referenciaRegex = /Data Pagamento\s+(\d{2}\/\d{4})/;
-            const totalVencimentosRegex = /Total Vencimentos:\s+([\d.]+,\d{2})/;
+            const text = content.items
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                .map((item) => (item as any).str)
+                .join(" ");
 
-            const referenciaMatch = text.match(referenciaRegex);
-            const totalVencimentosMatch = text.match(totalVencimentosRegex);
+            console.log("📄 TEXTO DA PÁGINA:", text);
+
+            // ✅ DATA PAGAMENTO
+            const dataPagamentoRegex = /Data Pagamento\s+(\d{2}\/\d{2}\/\d{4})/;
+
+            // ✅ TOTAL VENCIMENTOS, DESCONTOS E LÍQUIDO
+            const totaisRegex =
+                /(\d{1,3}(?:\.\d{3})*,\d{2})\s+(\d{1,3}(?:\.\d{3})*,\d{2})\s+(\d{1,3}(?:\.\d{3})*,\d{2})\s*\*/;
+
+            const dataPagamentoMatch = text.match(dataPagamentoRegex);
+            const totaisMatch = text.match(totaisRegex);
 
             pageResults.push({
               fileName: file.name,
               pageNumber: i,
-              referencia: referenciaMatch ? referenciaMatch[1] : "Não encontrado",
-              totalVencimentos: totalVencimentosMatch ? totalVencimentosMatch[1] : "Não encontrado",
+              referencia: dataPagamentoMatch
+                  ? dataPagamentoMatch[1]
+                  : "Não encontrado",
+
+              totalVencimentos: totaisMatch
+                  ? totaisMatch[1]
+                  : "Não encontrado",
             });
           }
 
